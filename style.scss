@@ -1,0 +1,721 @@
+// ==========================================
+// 1. VARIABLES & DESIGN SYSTEM
+// ==========================================
+$primary: #10b981;        // Emerald Green (Check-in / Success)
+$primary-hover: #059669;
+$secondary: #0f172a;      // Dark Slate Header/Accents
+$bg-main: #0f172a;        // Deep Slate Page Background
+$card-bg: #1e293b;        // Slate Navy Card Background
+$border-color: #334155;   // Subtle Gray/Slate Border
+$text-main: #f8fafc;      // Bright Off-White Title Text
+$text-muted: #94a3b8;     // Subtitle & Label Muted Text
+$danger: #ef4444;         // Check-out / Red Accent
+$danger-hover: #dc2626;
+$warning: #f59e0b;        // Warning Gold/Amber
+
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 16px;
+$transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+$font-family: 'Inter', sans-serif;
+
+// ==========================================
+// 2. BASE & RESET STYLES
+// ==========================================
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-family;
+  background-color: $bg-main;
+  color: $text-main;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+// Helper Class
+.hidden {
+  display: none !important;
+}
+
+// Screen-reader-only content (visually hidden, still announced)
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// ==========================================
+// 3. TOP NAVIGATION NAVBAR
+// ==========================================
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background-color: rgba($card-bg, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid $border-color;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: $primary;
+    text-transform: uppercase;
+  }
+
+  .user-profile {
+    #profile-role-text {
+      font-size: 0.85rem;
+      font-weight: 600;
+      background-color: rgba($secondary, 0.8);
+      border: 1px solid $border-color;
+      padding: 6px 14px;
+      border-radius: 20px;
+      color: $text-muted;
+    }
+  }
+}
+
+// ==========================================
+// 4. MAIN LAYOUT CONTAINER
+// ==========================================
+.dashboard-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.dashboard-header {
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: $text-muted;
+    margin-top: 2px;
+  }
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+
+  // Let the columns shrink below their content width so the attendance
+  // table scrolls inside .table-wrapper instead of stretching the page.
+  > * {
+    min-width: 0;
+  }
+}
+
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+// ==========================================
+// 5. CARDS & SECTIONS
+// ==========================================
+.card {
+  background-color: $card-bg;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 24px;
+  min-width: 0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+
+  .card-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $text-muted;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+}
+
+// ==========================================
+// 6. LIVE OCCUPANCY RING
+// ==========================================
+.occupancy-card {
+  text-align: center;
+
+  // Facility is at capacity
+  // NOTE: selectors mirror the base rule's specificity so they win the cascade.
+  &.is-full {
+    .ring-container .ring-content .count-number {
+      color: $danger;
+    }
+
+    .ring-container .ring-svg .ring-progress {
+      stroke: $danger;
+    }
+  }
+
+  .occupancy-display {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+  }
+
+  .ring-container {
+    position: relative;
+    width: 180px;
+    height: 180px;
+
+    .ring-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+
+      circle {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+      }
+
+      .ring-bg {
+        stroke: rgba($border-color, 0.5);
+      }
+
+      .ring-progress {
+        stroke: $primary;
+        stroke-dasharray: 314;
+        stroke-dashoffset: 314;
+        transition: stroke-dashoffset 0.6s ease-in-out;
+      }
+    }
+
+    .ring-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      .count-number {
+        font-size: 2.75rem;
+        font-weight: 700;
+        line-height: 1;
+        color: $text-main;
+      }
+
+      .count-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: $text-muted;
+        margin-top: 4px;
+      }
+    }
+  }
+
+  .capacity-status {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-muted;
+    margin-top: 12px;
+
+    span {
+      color: $text-main;
+    }
+
+    .capacity-state {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background-color: rgba($primary, 0.15);
+      border: 1px solid $primary;
+      color: $primary;
+
+      &.is-full {
+        background-color: rgba($danger, 0.15);
+        border-color: $danger;
+        color: $danger;
+      }
+    }
+  }
+}
+
+// ==========================================
+// 7. QUICK CHECK-IN FORM & TOAST
+// ==========================================
+.checkin-card {
+  position: relative;
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    input {
+      width: 100%;
+      background-color: rgba($bg-main, 0.6);
+      border: 1px solid $border-color;
+      border-radius: $radius-md;
+      padding: 12px 16px;
+      color: $text-main;
+      font-size: 0.95rem;
+      outline: none;
+      transition: $transition;
+
+      &::placeholder {
+        color: rgba($text-muted, 0.6);
+      }
+
+      &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.2);
+      }
+    }
+  }
+
+  .toast {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba($primary, 0.15);
+    border: 1px solid $primary;
+    color: $primary;
+    padding: 10px 14px;
+    border-radius: $radius-md;
+    font-size: 0.85rem;
+    font-weight: 500;
+    animation: fadeIn 0.2s ease-in-out;
+
+    .toast-icon-slot {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .toast-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    // Error variant (e.g. facility full, duplicate check-in)
+    &.toast-error {
+      background-color: rgba($danger, 0.15);
+      border-color: $danger;
+      color: $danger;
+    }
+
+    // Warning variant (e.g. logs wiped)
+    &.toast-warning {
+      background-color: rgba($warning, 0.15);
+      border-color: $warning;
+      color: $warning;
+    }
+  }
+}
+
+// ==========================================
+// 8. BUTTONS
+// ==========================================
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  transition: $transition;
+
+  svg, i {
+    width: 18px;
+    height: 18px;
+  }
+
+  &.btn-primary {
+    background-color: $primary;
+    color: #ffffff;
+
+    &:hover {
+      background-color: $primary-hover;
+    }
+  }
+
+  // Destructive action (clear logs) - outlined, red on hover
+  &.btn-danger-ghost {
+    background-color: rgba($danger, 0.12);
+    border: 1px solid rgba($danger, 0.45);
+    color: $danger;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+
+    &:hover {
+      background-color: $danger;
+      color: #ffffff;
+    }
+  }
+
+  // Disabled state (e.g. Confirm Wipe before the phrase is typed)
+  &.btn:disabled {
+    background-color: rgba($border-color, 0.5);
+    border-color: transparent;
+    color: $text-muted;
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-checkout {
+  background-color: rgba($danger, 0.15);
+  border: 1px solid rgba($danger, 0.4);
+  color: $danger;
+  padding: 5px 12px;
+  border-radius: $radius-sm;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: $danger;
+    color: #ffffff;
+  }
+}
+
+// ==========================================
+// 9. ATTENDANCE LOG TABLE & SEARCH
+// ==========================================
+.log-card {
+  .card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .card-title {
+      margin-bottom: 0;
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      min-width: 0;
+
+      // Stack the controls on narrow screens
+      @media (max-width: 520px) {
+        flex-direction: column;
+        align-items: stretch;
+
+        .search-box {
+          flex: 0 0 auto;
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .search-box {
+    position: relative;
+    width: 240px;
+    max-width: 100%;
+    flex: 1 1 200px;
+    min-width: 0;
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: $text-muted;
+    }
+
+    input {
+      width: 100%;
+      background-color: rgba($bg-main, 0.6);
+      border: 1px solid $border-color;
+      border-radius: $radius-md;
+      padding: 8px 12px 8px 36px;
+      color: $text-main;
+      font-size: 0.85rem;
+      outline: none;
+      transition: $transition;
+
+      &:focus {
+        border-color: $primary;
+      }
+    }
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+
+  th, td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba($border-color, 0.6);
+  }
+
+  th {
+    color: $text-muted;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  tbody tr {
+    transition: $transition;
+
+    &:hover {
+      background-color: rgba($border-color, 0.2);
+    }
+  }
+
+  .member-name {
+    font-weight: 600;
+    color: $text-main;
+  }
+}
+
+// Badges inside table
+.date-badge {
+  display: inline-block;
+  background-color: rgba($bg-main, 0.8);
+  border: 1px solid $border-color;
+  color: $text-muted;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: $radius-sm;
+}
+
+.time-badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: $radius-sm;
+
+  &.in {
+    background-color: rgba($primary, 0.15);
+    color: $primary;
+  }
+
+  &.out {
+    background-color: rgba($text-muted, 0.15);
+    color: $text-muted;
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 32px 16px;
+  color: $text-muted;
+  font-size: 0.9rem;
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ==========================================
+// 10. CONFIRMATION WARNING MODAL
+// ==========================================
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-card {
+  background-color: $card-bg;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.15s ease-out;
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    color: $warning;
+
+    .warning-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: $text-main;
+    }
+  }
+
+  // Destructive variant (clear all logs)
+  &.modal-card-danger {
+    border-color: rgba($danger, 0.45);
+
+    .modal-header {
+      color: $danger;
+
+      h3 {
+        color: $danger;
+      }
+    }
+  }
+
+  .modal-input-label {
+    display: block;
+    margin: 18px 0 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-muted;
+
+    strong {
+      color: $danger;
+      letter-spacing: 1px;
+    }
+  }
+
+  .modal-input {
+    width: 100%;
+    background-color: rgba($bg-main, 0.6);
+    border: 1px solid $border-color;
+    border-radius: $radius-md;
+    padding: 11px 14px;
+    color: $text-main;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    outline: none;
+    transition: $transition;
+
+    &::placeholder {
+      color: rgba($text-muted, 0.5);
+      letter-spacing: 1px;
+    }
+
+    &:focus {
+      border-color: $danger;
+      box-shadow: 0 0 0 3px rgba($danger, 0.2);
+    }
+
+    // Phrase matched - safe to wipe
+    &.is-valid {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.2);
+    }
+  }
+
+  .modal-body {
+    font-size: 0.95rem;
+    color: $text-muted;
+    line-height: 1.5;
+
+    strong {
+      color: $text-main;
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+  }
+}
+
+.btn-secondary-modal {
+  background-color: rgba($border-color, 0.5);
+  color: $text-main;
+  border: none;
+  padding: 10px 16px;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: $border-color;
+  }
+}
+
+.btn-danger-modal {
+  background-color: $danger;
+  color: #ffffff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: $danger-hover;
+  }
+}
