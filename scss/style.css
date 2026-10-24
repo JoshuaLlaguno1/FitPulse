@@ -617,6 +617,21 @@ body {
   border-color: #f59e0b;
   color: #f59e0b;
 }
+.toast.toast-admin {
+  background-color: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.9);
+  color: #fbbf24;
+}
+.toast.toast-staff {
+  background-color: rgba(6, 182, 212, 0.18);
+  border-color: rgba(6, 182, 212, 0.9);
+  color: #22d3ee;
+}
+.toast.toast-member {
+  background-color: rgba(16, 185, 129, 0.18);
+  border-color: rgba(16, 185, 129, 0.9);
+  color: #10b981;
+}
 
 @keyframes fadeIn {
   from {

@@ -325,6 +325,34 @@
     </div>
   </div>
 
+  <!-- Admin Passcode Modal -->
+  <div id="admin-pin-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="admin-pin-title" aria-describedby="admin-pin-desc">
+    <div class="modal-card">
+      <div class="modal-header">
+        <i data-lucide="lock" class="warning-icon"></i>
+        <h3 id="admin-pin-title">Admin Passcode Required</h3>
+      </div>
+      <p id="admin-pin-desc" class="modal-body">
+        Enter the admin PIN to confirm this action.
+      </p>
+      <label class="modal-input-label" for="admin-pin-input">
+        Admin PIN
+      </label>
+      <input
+        type="password"
+        id="admin-pin-input"
+        class="modal-input"
+        placeholder="Enter Admin PIN"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="modal-actions">
+        <button id="btn-admin-pin-cancel" class="btn btn-secondary-modal">Cancel</button>
+        <button id="btn-admin-pin-confirm" class="btn btn-danger-modal">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Screen-reader announcements for check-in / check-out events -->
   <div id="live-region" class="sr-only" role="status" aria-live="polite"></div>
 

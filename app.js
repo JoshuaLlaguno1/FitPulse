@@ -6,9 +6,13 @@ const STORAGE_KEY = 'fitpulse.attendance.v1';
 const RING_CIRCUMFERENCE = 314;
 
 // Source of truth for the attendance log.
-// Each record: { id, name, date, timeIn, timeOut, role }
+// Each record: { id, name, date, timeIn, timeOut }
 let records = [];
 let nextRecordId = 1;
+
+// Admin PIN for destructive actions
+const ADMIN_PIN = '1234';
+let pendingClearAction = null; // 'clearLogs' | 'clearHistory'
 
 // Dashboard-only view cutoff. Records with an id at or below this value stay
 // in the central store (and in History) but are hidden from the dashboard log.
@@ -102,6 +106,12 @@ const clearHistoryModal = document.getElementById('clear-history-modal');
 const btnClearHistoryCancel = document.getElementById('btn-clear-history-cancel');
 const btnClearHistoryConfirm = document.getElementById('btn-clear-history-confirm');
 
+// Admin PIN modal elements
+const adminPinModal = document.getElementById('admin-pin-modal');
+const adminPinInput = document.getElementById('admin-pin-input');
+const btnAdminPinCancel = document.getElementById('btn-admin-pin-cancel');
+const btnAdminPinConfirm = document.getElementById('btn-admin-pin-confirm');
+
 // ==========================================
 // UTILITY FUNCTIONS
 // ==========================================
@@ -126,13 +136,7 @@ function normalizeName(name) {
   return String(name).trim().replace(/\s+/g, ' ').toLowerCase();
 }
 
-// Determine role based on name (case-insensitive)
-function getRoleForName(name) {
-  const normalized = String(name).trim().toLowerCase();
-  if (normalized === 'bryan') return 'Admin';
-  if (normalized === 'kate') return 'Staff';
-  return 'Member';
-}
+// Role logic removed - all entries treated as members uniformly
 
 // A session is active only while it has not checked out and its id is above the
 // last dashboard-clear cutoff. Clearing the dashboard logically ends those
@@ -213,8 +217,7 @@ function loadState() {
         name: r.name,
         date: r.date,
         timeIn: r.timeIn || '',
-        timeOut: r.timeOut || null,
-        role: r.role || getRoleForName(r.name)
+        timeOut: r.timeOut || null
       }));
 
     const highestId = records.reduce((max, r) => Math.max(max, r.id), 0);
@@ -239,10 +242,19 @@ function showToast(message, type = 'success') {
   if (!toast || !toastMessage) return;
 
   // Normalise the requested tone
-  const tone = (type === 'error' || type === 'warning') ? type : 'success';
+  let tone = type;
+  if (type === 'error' || type === 'warning') {
+    tone = type;
+  } else if (type === 'success' || type === 'member') {
+    tone = type === 'member' ? 'member' : 'success';
+  } else if (type === 'admin' || type === 'staff') {
+    tone = type;
+  } else {
+    tone = 'success';
+  }
 
   toastMessage.textContent = message;
-  toast.classList.remove('toast-success', 'toast-error', 'toast-warning');
+  toast.classList.remove('toast-success', 'toast-error', 'toast-warning', 'toast-admin', 'toast-staff', 'toast-member');
   toast.classList.add('toast-' + tone);
 
   // Swap the Lucide icon to match the toast type
@@ -250,7 +262,12 @@ function showToast(message, type = 'success') {
     toastIconSlot.replaceChildren();
     const icon = document.createElement('i');
     icon.className = 'toast-icon';
-    const iconName = tone === 'error' ? 'alert-circle' : tone === 'warning' ? 'alert-triangle' : 'check-circle-2';
+    let iconName = 'check-circle-2';
+    if (tone === 'error') iconName = 'alert-circle';
+    else if (tone === 'warning') iconName = 'alert-triangle';
+    else if (tone === 'admin') iconName = 'shield-check';
+    else if (tone === 'staff') iconName = 'briefcase';
+    else if (tone === 'member') iconName = 'user-check';
     icon.setAttribute('data-lucide', iconName);
     toastIconSlot.appendChild(icon);
   }
@@ -261,9 +278,10 @@ function showToast(message, type = 'success') {
 
   if (toastTimeout) clearTimeout(toastTimeout);
 
+  const duration = (tone === 'error' || tone === 'warning') ? 5000 : 3500;
   toastTimeout = setTimeout(() => {
     toast.classList.add('hidden');
-  }, tone === 'success' ? 3000 : 5000);
+  }, duration);
 
   // Announce the outcome to assistive technology
   if (liveRegion) liveRegion.textContent = message;
@@ -300,15 +318,6 @@ function createAttendanceRow(record) {
   const nameTd = document.createElement('td');
   nameTd.className = 'member-name';
   nameTd.textContent = record.name;
-
-  // Role badge
-  const role = record.role || getRoleForName(record.name);
-  const roleBadge = document.createElement('span');
-  const roleClass = role === 'Admin' ? 'badge-admin' : role === 'Staff' ? 'badge-staff' : 'badge-member';
-  roleBadge.className = `role-badge ${roleClass}`;
-  roleBadge.textContent = role;
-  nameTd.appendChild(document.createTextNode(' '));
-  nameTd.appendChild(roleBadge);
 
   // Check-in time cell
   const timeInTd = document.createElement('td');
@@ -509,14 +518,7 @@ function createHistoryItem(record) {
 
   const name = document.createElement('span');
   name.className = 'history-name';
-  const role = record.role || getRoleForName(record.name);
-  const roleClass = role === 'Admin' ? 'badge-admin' : role === 'Staff' ? 'badge-staff' : 'badge-member';
   name.textContent = record.name;
-  const roleBadge = document.createElement('span');
-  roleBadge.className = `role-badge ${roleClass}`;
-  roleBadge.textContent = role;
-  name.appendChild(document.createTextNode(' '));
-  name.appendChild(roleBadge);
 
   const meta = document.createElement('span');
   meta.className = 'history-session';
@@ -752,7 +754,16 @@ function clearAllHistory() {
 }
 
 if (btnClearHistory) {
-  btnClearHistory.addEventListener('click', () => openClearHistoryModal(btnClearHistory));
+  btnClearHistory.addEventListener('click', () => {
+    pendingClearAction = 'clearHistory';
+    openModal(adminPinModal, btnClearHistory, () => {
+      if (adminPinInput) {
+        adminPinInput.value = '';
+        adminPinInput.focus();
+      }
+    });
+    if (window.lucide) lucide.createIcons();
+  });
 }
 
 if (btnClearHistoryCancel) {
@@ -770,6 +781,61 @@ if (btnClearHistoryConfirm) {
 if (clearHistoryModal) {
   clearHistoryModal.addEventListener('click', (e) => {
     if (e.target === clearHistoryModal) closeClearHistoryModal();
+  });
+}
+
+// Admin PIN modal handlers
+function closeAdminPinModal() {
+  closeModal(adminPinModal);
+}
+
+if (btnAdminPinCancel) {
+  btnAdminPinCancel.addEventListener('click', () => {
+    pendingClearAction = null;
+    closeAdminPinModal();
+  });
+}
+
+if (btnAdminPinConfirm) {
+  btnAdminPinConfirm.addEventListener('click', () => {
+    if (!adminPinInput) return;
+    const entered = adminPinInput.value;
+    if (entered === ADMIN_PIN) {
+      const action = pendingClearAction;
+      pendingClearAction = null;
+      adminPinInput.value = '';
+      closeAdminPinModal();
+      if (action === 'clearLogs') {
+        openModal(clearLogsModal, btnClearLogs, () => {
+          if (clearConfirmInput) {
+            clearConfirmInput.value = '';
+            clearConfirmInput.focus();
+          }
+          updateClearConfirmState();
+        });
+        if (window.lucide) lucide.createIcons();
+        return;
+      } else if (action === 'clearHistory') {
+        openModal(clearHistoryModal, btnClearHistory);
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+      if (searchInput) searchInput.focus();
+    } else {
+      adminPinInput.value = '';
+      showToast('Invalid Admin Passcode. Access denied.', 'error');
+      adminPinInput.focus();
+    }
+  });
+}
+
+if (adminPinModal) {
+  adminPinModal.addEventListener('click', (e) => {
+    if (e.target === adminPinModal) {
+      pendingClearAction = null;
+      if (adminPinInput) adminPinInput.value = '';
+      closeAdminPinModal();
+    }
   });
 }
 
@@ -1035,21 +1101,19 @@ if (checkinForm) {
     const timeIn = getCurrentTimeFormatted();
     const currentDate = getCurrentDateFormatted();
 
-    const role = getRoleForName(name);
     records.unshift({
       id: nextRecordId++,
       name,
       date: currentDate,
       timeIn,
-      timeOut: null,
-      role
+      timeOut: null
     });
 
     saveState();
     renderAttendanceList();
     renderLiveOccupancy();
 
-    showToast(`${name} | Checked In: ${timeIn}`);
+    showToast(`Member ${name} checked in successfully!`);
 
     memberInput.value = '';
     clearFieldError();
@@ -1127,14 +1191,14 @@ function updateClearLogsButtonState() {
 }
 
 function openClearLogsModal(triggerElement) {
-  openModal(clearLogsModal, triggerElement, () => {
-    if (clearConfirmInput) {
-      clearConfirmInput.value = '';
-      clearConfirmInput.focus();
+  // Require admin PIN before clearing logs
+  pendingClearAction = 'clearLogs';
+  openModal(adminPinModal, triggerElement, () => {
+    if (adminPinInput) {
+      adminPinInput.value = '';
+      adminPinInput.focus();
     }
-    updateClearConfirmState();
   });
-
   if (window.lucide) lucide.createIcons();
 }
 
@@ -1178,6 +1242,7 @@ if (btnClearConfirm) {
     if (!clearConfirmInput || clearConfirmInput.value !== CLEAR_CONFIRM_PHRASE) return;
 
     clearDashboardLogs();
+    showToast('Dashboard log reset completed.', 'success');
     closeClearLogsModal();
     if (searchInput) searchInput.focus();
   });
