@@ -24,127 +24,243 @@
   <!-- Top Navigation Header -->
   <header class="navbar">
     <div class="logo">FitPulse</div>
+
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <button type="button" class="nav-link is-active" data-view="dashboard" aria-current="page">
+        <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+        <span>Dashboard</span>
+      </button>
+      <button type="button" class="nav-link" data-view="history">
+        <i data-lucide="history" aria-hidden="true"></i>
+        <span>History</span>
+      </button>
+    </nav>
+
     <div class="user-profile">
       <span id="profile-role-text">Public Kiosk</span>
     </div>
   </header>
 
-  <!-- Main Dashboard Container -->
+  <!-- Main Application Container -->
   <main class="dashboard-container">
+    <div id="app-content">
+      <!-- DASHBOARD VIEW -->
+      <section id="view-dashboard" class="app-view" aria-labelledby="dashboard-title">
 
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
-      <h1>MEMBER CHECK-IN DASHBOARD</h1>
-      <p class="subtitle">Live Facility Capacity &amp; Recent Activity</p>
-    </div>
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+          <h1 id="dashboard-title">MEMBER CHECK-IN DASHBOARD</h1>
+          <p class="subtitle">Live Facility Capacity &amp; Recent Activity</p>
+        </div>
 
-    <!-- Main Grid Layout -->
-    <div class="dashboard-grid">
+      <!-- Main Grid Layout -->
+      <div class="dashboard-grid">
 
-      <!-- LEFT COLUMN -->
-      <div class="left-column">
+        <!-- LEFT COLUMN -->
+        <div class="left-column">
 
-        <!-- Live Occupancy Card -->
-        <section class="card occupancy-card">
-          <h2 class="card-title">LIVE OCCUPANCY</h2>
-          <div class="occupancy-display">
-            <div class="ring-container">
-              <svg class="ring-svg" viewBox="0 0 120 120">
-                <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
-                <circle id="occupancy-ring" class="ring-progress" cx="60" cy="60" r="50"></circle>
-              </svg>
-              <div class="ring-content">
-                <span id="active-count" class="count-number">0</span>
-                <span class="count-label">ACTIVE MEMBERS</span>
+          <!-- Live Occupancy Card -->
+          <section class="card occupancy-card">
+            <h2 class="card-title">LIVE OCCUPANCY</h2>
+            <div class="occupancy-display">
+              <div class="ring-container">
+                <svg class="ring-svg" viewBox="0 0 120 120">
+                  <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
+                  <circle id="occupancy-ring" class="ring-progress" cx="60" cy="60" r="50"></circle>
+                </svg>
+                <div class="ring-content">
+                  <span id="active-count" class="count-number">0</span>
+                  <span class="count-label">ACTIVE MEMBERS</span>
+                </div>
               </div>
             </div>
-          </div>
-          <p class="capacity-status">
-            FACILITY CAPACITY: <span id="current-capacity">0</span> / <span id="max-capacity">50</span>
-            <span id="capacity-state" class="capacity-state">AVAILABLE</span>
-          </p>
-        </section>
+            <p class="capacity-status">
+              FACILITY CAPACITY: <span id="current-capacity">0</span> / <span id="max-capacity">25</span>
+              <span id="capacity-state" class="capacity-state">AVAILABLE</span>
+            </p>
+          </section>
 
-        <!-- Quick Check-In Card -->
-        <section class="card checkin-card">
-          <h2 class="card-title">QUICK CHECK-IN</h2>
-          <form id="checkin-form" class="checkin-form">
-            <div class="input-group">
-              <label class="sr-only" for="member-input">Member full name</label>
-              <input
-                type="text"
-                id="member-input"
-                placeholder="Enter Your Full Name"
-                required
-                autocomplete="off"
-              />
-              <button type="submit" class="btn btn-primary">
-                <i data-lucide="user-check"></i> CHECK IN
-              </button>
+          <!-- Quick Check-In Card -->
+          <section class="card checkin-card">
+            <h2 class="card-title">QUICK CHECK-IN</h2>
+            <form id="checkin-form" class="checkin-form" novalidate>
+              <div class="input-group">
+                <label class="sr-only" for="member-input">Member full name</label>
+                <input
+                  type="text"
+                  id="member-input"
+                  class="name-input"
+                  placeholder="Enter Your Full Name"
+                  required
+                  autocomplete="off"
+                  autocapitalize="words"
+                  spellcheck="false"
+                  inputmode="text"
+                  maxlength="60"
+                  pattern="[A-Za-z][A-Za-z\s'-]*"
+                  aria-describedby="member-input-hint member-input-error"
+                  title="Letters, spaces, hyphens and apostrophes only."
+                />
+                <button type="submit" class="btn btn-primary">
+                  <i data-lucide="user-check"></i> CHECK IN
+                </button>
+              </div>
+              <p id="member-input-hint" class="field-hint">
+                Letters, spaces, hyphens (-) and apostrophes (') only.
+              </p>
+              <p id="member-input-error" class="field-error hidden" role="alert"></p>
+            </form>
+
+            <!-- UI Feedback: Toast Notification -->
+            <div id="feedback-toast" class="toast hidden">
+              <span id="toast-icon-slot" class="toast-icon-slot"></span>
+              <span id="toast-message">Member Checked In</span>
             </div>
-          </form>
+          </section>
 
-          <!-- UI Feedback: Toast Notification -->
-          <div id="feedback-toast" class="toast hidden">
-            <span id="toast-icon-slot" class="toast-icon-slot"></span>
-            <span id="toast-message">Member Checked In</span>
-          </div>
-        </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="right-column">
+
+          <!-- Recent Attendance Log Table -->
+          <section class="card log-card">
+            <div class="card-header-flex">
+              <h2 class="card-title">RECENT ATTENDANCE LOG</h2>
+
+              <div class="header-tools">
+                <!-- Attendance Search Box -->
+                <div class="search-box">
+                  <label class="sr-only" for="search-input">Search the attendance log</label>
+                  <i data-lucide="search" class="search-icon"></i>
+                  <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Search member or date..."
+                    autocomplete="off"
+                  />
+                </div>
+
+                <!-- Hide the dashboard log without deleting History records -->
+                <button id="btn-clear-logs" type="button" class="btn btn-danger-ghost" title="Clears this dashboard log and resets live occupancy. Attendance history is preserved.">
+                  <i data-lucide="trash-2"></i> CLEAR LOG
+                </button>
+              </div>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="attendance-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Checked In</th>
+                    <th>Checked Out</th>
+                  </tr>
+                </thead>
+                <tbody id="attendance-list">
+                  <!-- Log rows will be added dynamically here -->
+                </tbody>
+              </table>
+              <!-- Empty search result state -->
+              <div id="no-results" class="no-results hidden">No records found matching your search.</div>
+            </div>
+          </section>
+
+        </div>
 
       </div>
 
-      <!-- RIGHT COLUMN -->
-      <div class="right-column">
+      </section>
 
-        <!-- Recent Attendance Log Table -->
-        <section class="card log-card">
-          <div class="card-header-flex">
-            <h2 class="card-title">RECENT ATTENDANCE LOG</h2>
+      <!-- HISTORY VIEW -->
+      <section id="view-history" class="app-view hidden" aria-labelledby="history-title">
 
-            <div class="header-tools">
-              <!-- Attendance Search Box -->
-              <div class="search-box">
-                <label class="sr-only" for="search-input">Search the attendance log</label>
-                <i data-lucide="search" class="search-icon"></i>
+        <!-- History Header -->
+        <div class="dashboard-header">
+          <h1 id="history-title">ATTENDANCE HISTORY</h1>
+          <p class="subtitle">Past check-ins grouped by date &middot; Filter by day or search a member</p>
+        </div>
+
+        <!-- History Filters -->
+        <section class="card history-filter-card" aria-label="Attendance history filters">
+          <div class="history-filter-row">
+            <div class="filter-field filter-field-date">
+              <label for="history-date">Filter by date</label>
+              <input type="date" id="history-date" />
+            </div>
+
+            <div class="filter-field filter-field-search">
+              <label class="sr-only" for="history-search">Search attendance history</label>
+              <div class="history-search-box">
+                <i data-lucide="search" class="search-icon" aria-hidden="true"></i>
                 <input
                   type="text"
-                  id="search-input"
-                  placeholder="Search member or date..."
+                  id="history-search"
+                  placeholder="Search member name..."
                   autocomplete="off"
                 />
               </div>
-
-              <!-- Destructive: wipe every attendance record -->
-              <button id="btn-clear-logs" type="button" class="btn btn-danger-ghost">
-                <i data-lucide="trash-2"></i> CLEAR LOGS
-              </button>
             </div>
+
+            <button type="button" id="btn-history-reset" class="btn btn-ghost" disabled>
+              <i data-lucide="rotate-ccw" aria-hidden="true"></i> RESET
+            </button>
+            <button type="button" id="btn-clear-history" class="btn btn-danger-ghost" title="Permanently remove all attendance history records.">
+              <i data-lucide="trash-2" aria-hidden="true"></i> CLEAR HISTORY
+            </button>
           </div>
 
-          <div class="table-wrapper">
-            <table class="attendance-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Name</th>
-                  <th>Checked In</th>
-                  <th>Checked Out</th>
-                </tr>
-              </thead>
-              <tbody id="attendance-list">
-                <!-- Log rows will be added dynamically here -->
-              </tbody>
-            </table>
-            <!-- Empty search result state -->
-            <div id="no-results" class="no-results hidden">No records found matching your search.</div>
-          </div>
+          <p id="history-result-summary" class="history-result-summary" aria-live="polite">
+            No check-ins recorded yet.
+          </p>
         </section>
 
-      </div>
+        <!-- Loading State -->
+        <div id="history-loading" class="history-loading hidden" role="status" aria-live="polite">
+          <span class="sr-only">Loading attendance history&hellip;</span>
+          <div class="skeleton-group" aria-hidden="true">
+            <div class="skeleton-line skeleton-heading"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+          <div class="skeleton-group" aria-hidden="true">
+            <div class="skeleton-line skeleton-heading short"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+        </div>
 
+        <!-- Chronological groups are rendered here -->
+        <div id="history-content" class="history-content"></div>
+
+        <!-- Empty State -->
+        <div id="history-empty" class="history-empty hidden" role="status">
+          <div class="empty-icon" aria-hidden="true">
+            <i data-lucide="calendar-x"></i>
+          </div>
+          <h2 id="history-empty-title">No check-in history yet</h2>
+          <p id="history-empty-text">Once members check in, their visits will be grouped here by date.</p>
+          <button type="button" id="btn-history-empty" class="btn btn-primary" data-action="dashboard">
+            <i data-lucide="layout-dashboard"></i> GO TO DASHBOARD
+          </button>
+        </div>
+
+      </section>
     </div>
-
   </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-copyright">&copy; 2026 FitPulse Systems. Built for Iligan City Gyms.</p>
+      <p class="footer-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        Status: <strong>Kiosk Active</strong>
+      </p>
+      <p class="footer-credits">Course Project: FitPulse Systems &mdash; Web Systems and Technologies</p>
+    </div>
+  </footer>
 
   <!-- Checkout Confirmation Warning Modal -->
   <div id="checkout-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title" aria-describedby="checkout-modal-desc">
@@ -163,31 +279,48 @@
     </div>
   </div>
 
-  <!-- Clear All Logs Confirmation Modal (destructive) -->
+  <!-- Clear Dashboard Log Confirmation Modal -->
   <div id="clear-logs-modal" class="modal-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="clear-logs-title" aria-describedby="clear-logs-desc">
     <div class="modal-card modal-card-danger">
       <div class="modal-header">
         <i data-lucide="alert-triangle" class="warning-icon"></i>
-        <h3 id="clear-logs-title">Clear All Logs</h3>
+        <h3 id="clear-logs-title">Clear Dashboard Log</h3>
       </div>
       <p id="clear-logs-desc" class="modal-body">
-        This will permanently wipe <strong>every</strong> attendance record from this device, including all members who are currently checked in. This action cannot be undone.
+        This hides all entries currently shown in the dashboard log and resets <strong>Live Occupancy</strong> to zero. Attendance history is preserved, and no records are deleted from this device.
       </p>
       <label class="modal-input-label" for="clear-confirm-input">
-        Type <strong>DELETE</strong> to confirm:
+        Type <strong>CLEAR</strong> to confirm:
       </label>
       <input
         type="text"
         id="clear-confirm-input"
         class="modal-input"
-        placeholder="DELETE"
+        placeholder="CLEAR"
         autocomplete="off"
         autocapitalize="characters"
         spellcheck="false"
       />
       <div class="modal-actions">
         <button id="btn-clear-cancel" class="btn btn-secondary-modal">Cancel</button>
-        <button id="btn-clear-confirm" class="btn btn-danger-modal" disabled>Confirm Wipe</button>
+        <button id="btn-clear-confirm" class="btn btn-danger-modal" disabled>Clear Dashboard Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear All History Confirmation Modal -->
+  <div id="clear-history-modal" class="modal-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="clear-history-title" aria-describedby="clear-history-desc">
+    <div class="modal-card modal-card-danger">
+      <div class="modal-header">
+        <i data-lucide="alert-triangle" class="warning-icon"></i>
+        <h3 id="clear-history-title">Clear all attendance history?</h3>
+      </div>
+      <p id="clear-history-desc" class="modal-body">
+        This action will permanently remove all stored past records. Active members currently checked in on the Dashboard will remain unaffected.
+      </p>
+      <div class="modal-actions">
+        <button id="btn-clear-history-cancel" class="btn btn-secondary-modal">Cancel</button>
+        <button id="btn-clear-history-confirm" class="btn btn-danger-modal">Clear All</button>
       </div>
     </div>
   </div>

@@ -1,0 +1,92 @@
+@use '../abstracts/variables' as *;
+
+// ==========================================
+// 8. BUTTONS
+// ==========================================
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: $radius-md;
+  border: none;
+  cursor: pointer;
+  transition: $transition;
+
+  svg, i {
+    width: 18px;
+    height: 18px;
+  }
+
+  &.btn-primary {
+    background-color: $primary;
+    color: #ffffff;
+
+    &:hover {
+      background-color: $primary-hover;
+    }
+  }
+
+  // Caution action (clear dashboard log) - outlined, red on hover
+  &.btn-danger-ghost {
+    background-color: rgba($danger, 0.12);
+    border: 1px solid rgba($danger, 0.45);
+    color: $danger;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+
+    &:hover {
+      background-color: $danger;
+      color: #ffffff;
+    }
+  }
+
+  // Disabled state
+  &.btn:disabled {
+    background-color: rgba($border-color, 0.5);
+    border-color: transparent;
+    color: $text-muted;
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.btn-checkout {
+  background-color: rgba($danger, 0.15);
+  border: 1px solid rgba($danger, 0.4);
+  color: $danger;
+  padding: 5px 12px;
+  border-radius: $radius-sm;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: $danger;
+    color: #ffffff;
+  }
+}
+
+.btn-ghost {
+  background-color: rgba($border-color, 0.35);
+  border: 1px solid $border-color;
+  color: $text-muted;
+  padding: 11px 16px;
+  font-size: 0.78rem;
+  letter-spacing: 0.4px;
+
+  &:hover:not(:disabled) {
+    background-color: rgba($border-color, 0.6);
+    color: $text-main;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}

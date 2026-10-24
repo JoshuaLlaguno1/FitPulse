@@ -1,0 +1,62 @@
+  <!-- Checkout Confirmation Warning Modal -->
+  <div id="checkout-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title" aria-describedby="checkout-modal-desc">
+    <div class="modal-card">
+      <div class="modal-header">
+        <i data-lucide="alert-triangle" class="warning-icon"></i>
+        <h3 id="checkout-modal-title">Confirm Check-Out</h3>
+      </div>
+      <p id="checkout-modal-desc" class="modal-body">
+        Are you sure you want to check out <strong id="modal-member-name">Member</strong>?
+      </p>
+      <div class="modal-actions">
+        <button id="btn-modal-cancel" class="btn btn-secondary-modal">Cancel</button>
+        <button id="btn-modal-confirm" class="btn btn-danger-modal">Yes, Check Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear Dashboard Log Confirmation Modal -->
+  <div id="clear-logs-modal" class="modal-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="clear-logs-title" aria-describedby="clear-logs-desc">
+    <div class="modal-card modal-card-danger">
+      <div class="modal-header">
+        <i data-lucide="alert-triangle" class="warning-icon"></i>
+        <h3 id="clear-logs-title">Clear Dashboard Log</h3>
+      </div>
+      <p id="clear-logs-desc" class="modal-body">
+        This hides all entries currently shown in the dashboard log and resets <strong>Live Occupancy</strong> to zero. Attendance history is preserved, and no records are deleted from this device.
+      </p>
+      <label class="modal-input-label" for="clear-confirm-input">
+        Type <strong>CLEAR</strong> to confirm:
+      </label>
+      <input
+        type="text"
+        id="clear-confirm-input"
+        class="modal-input"
+        placeholder="CLEAR"
+        autocomplete="off"
+        autocapitalize="characters"
+        spellcheck="false"
+      />
+      <div class="modal-actions">
+        <button id="btn-clear-cancel" class="btn btn-secondary-modal">Cancel</button>
+        <button id="btn-clear-confirm" class="btn btn-danger-modal" disabled>Clear Dashboard Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear All History Confirmation Modal -->
+  <div id="clear-history-modal" class="modal-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="clear-history-title" aria-describedby="clear-history-desc">
+    <div class="modal-card modal-card-danger">
+      <div class="modal-header">
+        <i data-lucide="alert-triangle" class="warning-icon"></i>
+        <h3 id="clear-history-title">Clear all attendance history?</h3>
+      </div>
+      <p id="clear-history-desc" class="modal-body">
+        This action will permanently remove all stored past records. Active members currently checked in on the Dashboard will remain unaffected.
+      </p>
+      <div class="modal-actions">
+        <button id="btn-clear-history-cancel" class="btn btn-secondary-modal">Cancel</button>
+        <button id="btn-clear-history-confirm" class="btn btn-danger-modal">Clear All</button>
+      </div>
+    </div>
+  </div>

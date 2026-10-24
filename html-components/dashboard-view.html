@@ -1,0 +1,128 @@
+    <!-- DASHBOARD VIEW -->
+    <section id="view-dashboard" class="app-view" aria-labelledby="dashboard-title">
+
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <h1 id="dashboard-title">MEMBER CHECK-IN DASHBOARD</h1>
+        <p class="subtitle">Live Facility Capacity &amp; Recent Activity</p>
+      </div>
+
+    <!-- Main Grid Layout -->
+    <div class="dashboard-grid">
+
+      <!-- LEFT COLUMN -->
+      <div class="left-column">
+
+        <!-- Live Occupancy Card -->
+        <section class="card occupancy-card">
+          <h2 class="card-title">LIVE OCCUPANCY</h2>
+          <div class="occupancy-display">
+            <div class="ring-container">
+              <svg class="ring-svg" viewBox="0 0 120 120">
+                <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
+                <circle id="occupancy-ring" class="ring-progress" cx="60" cy="60" r="50"></circle>
+              </svg>
+              <div class="ring-content">
+                <span id="active-count" class="count-number">0</span>
+                <span class="count-label">ACTIVE MEMBERS</span>
+              </div>
+            </div>
+          </div>
+          <p class="capacity-status">
+            FACILITY CAPACITY: <span id="current-capacity">0</span> / <span id="max-capacity">25</span>
+            <span id="capacity-state" class="capacity-state">AVAILABLE</span>
+          </p>
+        </section>
+
+        <!-- Quick Check-In Card -->
+        <section class="card checkin-card">
+          <h2 class="card-title">QUICK CHECK-IN</h2>
+          <form id="checkin-form" class="checkin-form" novalidate>
+            <div class="input-group">
+              <label class="sr-only" for="member-input">Member full name</label>
+              <input
+                type="text"
+                id="member-input"
+                class="name-input"
+                placeholder="Enter Your Full Name"
+                required
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                inputmode="text"
+                maxlength="60"
+                pattern="[A-Za-z][A-Za-z\s'-]*"
+                aria-describedby="member-input-hint member-input-error"
+                title="Letters, spaces, hyphens and apostrophes only."
+              />
+              <button type="submit" class="btn btn-primary">
+                <i data-lucide="user-check"></i> CHECK IN
+              </button>
+            </div>
+            <p id="member-input-hint" class="field-hint">
+              Letters, spaces, hyphens (-) and apostrophes (') only.
+            </p>
+            <p id="member-input-error" class="field-error hidden" role="alert"></p>
+          </form>
+
+          <!-- UI Feedback: Toast Notification -->
+          <div id="feedback-toast" class="toast hidden">
+            <span id="toast-icon-slot" class="toast-icon-slot"></span>
+            <span id="toast-message">Member Checked In</span>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="right-column">
+
+        <!-- Recent Attendance Log Table -->
+        <section class="card log-card">
+          <div class="card-header-flex">
+            <h2 class="card-title">RECENT ATTENDANCE LOG</h2>
+
+            <div class="header-tools">
+              <!-- Attendance Search Box -->
+              <div class="search-box">
+                <label class="sr-only" for="search-input">Search the attendance log</label>
+                <i data-lucide="search" class="search-icon"></i>
+                <input
+                  type="text"
+                  id="search-input"
+                  placeholder="Search member or date..."
+                  autocomplete="off"
+                />
+              </div>
+
+              <!-- Hide the dashboard log without deleting History records -->
+              <button id="btn-clear-logs" type="button" class="btn btn-danger-ghost" title="Clears this dashboard log and resets live occupancy. Attendance history is preserved.">
+                <i data-lucide="trash-2"></i> CLEAR LOG
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="attendance-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Checked In</th>
+                  <th>Checked Out</th>
+                </tr>
+              </thead>
+              <tbody id="attendance-list">
+                <!-- Log rows will be added dynamically here -->
+              </tbody>
+            </table>
+            <!-- Empty search result state -->
+            <div id="no-results" class="no-results hidden">No records found matching your search.</div>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+
+    </section>

@@ -1,0 +1,74 @@
+    <!-- HISTORY VIEW -->
+    <section id="view-history" class="app-view hidden" aria-labelledby="history-title">
+
+      <!-- History Header -->
+      <div class="dashboard-header">
+        <h1 id="history-title">ATTENDANCE HISTORY</h1>
+        <p class="subtitle">Past check-ins grouped by date &middot; Filter by day or search a member</p>
+      </div>
+
+      <!-- History Filters -->
+      <section class="card history-filter-card" aria-label="Attendance history filters">
+        <div class="history-filter-row">
+          <div class="filter-field filter-field-date">
+            <label for="history-date">Filter by date</label>
+            <input type="date" id="history-date" />
+          </div>
+
+          <div class="filter-field filter-field-search">
+            <label class="sr-only" for="history-search">Search attendance history</label>
+            <div class="history-search-box">
+              <i data-lucide="search" class="search-icon" aria-hidden="true"></i>
+              <input
+                type="text"
+                id="history-search"
+                placeholder="Search member name..."
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <button type="button" id="btn-history-reset" class="btn btn-ghost" disabled>
+            <i data-lucide="rotate-ccw" aria-hidden="true"></i> RESET
+          </button>
+          <button type="button" id="btn-clear-history" class="btn btn-danger-ghost" title="Permanently remove all attendance history records.">
+            <i data-lucide="trash-2" aria-hidden="true"></i> CLEAR HISTORY
+          </button>
+        </div>
+
+        <p id="history-result-summary" class="history-result-summary" aria-live="polite">
+          No check-ins recorded yet.
+        </p>
+      </section>
+
+      <!-- Loading State -->
+      <div id="history-loading" class="history-loading hidden" role="status" aria-live="polite">
+        <span class="sr-only">Loading attendance history&hellip;</span>
+        <div class="skeleton-group" aria-hidden="true">
+          <div class="skeleton-line skeleton-heading"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
+        <div class="skeleton-group" aria-hidden="true">
+          <div class="skeleton-line skeleton-heading short"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
+      </div>
+
+      <!-- Chronological groups are rendered here -->
+      <div id="history-content" class="history-content"></div>
+
+      <!-- Empty State -->
+      <div id="history-empty" class="history-empty hidden" role="status">
+        <div class="empty-icon" aria-hidden="true">
+          <i data-lucide="calendar-x"></i>
+        </div>
+        <h2 id="history-empty-title">No check-in history yet</h2>
+        <p id="history-empty-text">Once members check in, their visits will be grouped here by date.</p>
+        <button type="button" id="btn-history-empty" class="btn btn-primary" data-action="dashboard">
+          <i data-lucide="layout-dashboard"></i> GO TO DASHBOARD
+        </button>
+      </div>
+
+    </section>

@@ -1,0 +1,56 @@
+@use '../abstracts/variables' as *;
+
+// ==========================================
+// TOASTS
+// ==========================================
+.toast {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: rgba($primary, 0.15);
+  border: 1px solid $primary;
+  color: $primary;
+  padding: 10px 14px;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 500;
+  animation: fadeIn 0.2s ease-in-out;
+
+  .toast-icon-slot {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .toast-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  // Error variant
+  &.toast-error {
+    background-color: rgba($danger, 0.15);
+    border-color: $danger;
+    color: $danger;
+  }
+
+  // Warning variant
+  &.toast-warning {
+    background-color: rgba($warning, 0.15);
+    border-color: $warning;
+    color: $warning;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

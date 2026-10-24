@@ -1,0 +1,208 @@
+@use '../abstracts/variables' as *;
+
+// ==========================================
+// 10. CONFIRMATION WARNING MODAL
+// ==========================================
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-card {
+  background-color: $card-bg;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.15s ease-out;
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    color: $warning;
+
+    .warning-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: $text-main;
+    }
+  }
+
+  // Caution variant
+  &.modal-card-danger {
+    border-color: rgba($danger, 0.45);
+
+    .modal-header {
+      color: $danger;
+
+      h3 {
+        color: $danger;
+      }
+    }
+  }
+
+  .modal-input-label {
+    display: block;
+    margin: 18px 0 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $text-muted;
+
+    strong {
+      color: $danger;
+      letter-spacing: 1px;
+    }
+  }
+
+  .modal-input {
+    width: 100%;
+    background-color: rgba($bg-main, 0.6);
+    border: 1px solid $border-color;
+    border-radius: $radius-md;
+    padding: 11px 14px;
+    color: $text-main;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    outline: none;
+    transition: $transition;
+
+    &::placeholder {
+      color: rgba($text-muted, 0.5);
+      letter-spacing: 1px;
+    }
+
+    &:focus {
+      border-color: $danger;
+      box-shadow: 0 0 0 3px rgba($danger, 0.2);
+    }
+
+    &.is-valid {
+      border-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.2);
+    }
+  }
+
+  .modal-body {
+    font-size: 0.95rem;
+    color: $text-muted;
+    line-height: 1.5;
+
+    strong {
+      color: $text-main;
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+  }
+}
+
+.btn-secondary-modal {
+  background-color: rgba($border-color, 0.5);
+  color: $text-main;
+  border: none;
+  padding: 10px 16px;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: $border-color;
+  }
+}
+
+.btn-danger-modal {
+  background-color: $danger;
+  color: #ffffff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: $radius-md;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: $danger-hover;
+  }
+}
+
+// ==========================================
+// 11. SITE FOOTER
+// ==========================================
+.site-footer {
+  width: 100%;
+  border-top: 1px solid $border-color;
+  background-color: rgba($card-bg, 0.4);
+
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 20px 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .footer-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    strong {
+      color: $primary;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: $primary;
+      box-shadow: 0 0 0 3px rgba($primary, 0.2);
+      flex-shrink: 0;
+    }
+  }
+
+  .footer-credits {
+    font-size: 0.72rem;
+    color: rgba($text-muted, 0.8);
+  }
+
+  @media (max-width: 700px) {
+    .footer-inner {
+      flex-direction: column;
+      text-align: center;
+      gap: 8px;
+    }
+  }
+}

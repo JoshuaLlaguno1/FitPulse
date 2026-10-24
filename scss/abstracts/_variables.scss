@@ -1,0 +1,20 @@
+// ==========================================
+// 1. VARIABLES & DESIGN SYSTEM
+// ==========================================
+$primary: #10b981;        // Emerald Green (Check-in / Success)
+$primary-hover: #059669;
+$secondary: #0f172a;      // Dark Slate Header/Accents
+$bg-main: #0f172a;        // Deep Slate Page Background
+$card-bg: #1e293b;        // Slate Navy Card Background
+$border-color: #334155;   // Subtle Gray/Slate Border
+$text-main: #f8fafc;      // Bright Off-White Title Text
+$text-muted: #94a3b8;     // Subtitle & Label Muted Text
+$danger: #ef4444;         // Check-out / Red Accent
+$danger-hover: #dc2626;
+$warning: #f59e0b;        // Warning Gold/Amber
+
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 16px;
+$transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+$font-family: 'Inter', sans-serif;
