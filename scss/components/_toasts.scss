@@ -42,6 +42,27 @@
     border-color: $warning;
     color: $warning;
   }
+
+  // Admin variant (Amber)
+  &.toast-admin {
+    background-color: rgba(#f59e0b, 0.18);
+    border-color: rgba(#f59e0b, 0.9);
+    color: #fbbf24;
+  }
+
+  // Staff variant (Cyan)
+  &.toast-staff {
+    background-color: rgba(#06b6d4, 0.18);
+    border-color: rgba(#06b6d4, 0.9);
+    color: #22d3ee;
+  }
+
+  // Member variant (Emerald)
+  &.toast-member {
+    background-color: rgba($primary, 0.18);
+    border-color: rgba($primary, 0.9);
+    color: $primary;
+  }
 }
 
 @keyframes fadeIn {
