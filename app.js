@@ -65,13 +65,13 @@ const toastIconSlot = document.getElementById('toast-icon-slot');
 const liveRegion = document.getElementById('live-region');
 
 // Modal DOM Elements
-const checkoutModal = document.getElementById('checkout-modal');
+const checkoutModal = document.getElementById('checkoutModal');
 const modalMemberName = document.getElementById('modal-member-name');
 const btnModalCancel = document.getElementById('btn-modal-cancel');
 const btnModalConfirm = document.getElementById('btn-modal-confirm');
 
 // Clear-logs modal DOM Elements
-const clearLogsModal = document.getElementById('clear-logs-modal');
+const clearLogsModal = document.getElementById('clearLogModal');
 const clearConfirmInput = document.getElementById('clear-confirm-input');
 const btnClearLogs = document.getElementById('btn-clear-logs');
 const btnClearCancel = document.getElementById('btn-clear-cancel');
@@ -235,7 +235,7 @@ function loadState() {
 }
 
 // ==========================================
-// TOAST NOTIFICATIONS
+// TOAST NOTIFICATIONS (legacy - still used for errors/warnings)
 // ==========================================
 
 function showToast(message, type = 'success') {
@@ -286,6 +286,83 @@ function showToast(message, type = 'success') {
   // Announce the outcome to assistive technology
   if (liveRegion) liveRegion.textContent = message;
 }
+
+// Check-In Success Greeting Modal
+const checkinModal = document.getElementById('checkinModal');
+const modalGreeting = document.getElementById('modalGreeting');
+const modalTimestamp = document.getElementById('modalTimestamp');
+const closeModalBtn = document.getElementById('closeModalBtn');
+let checkinModalTimeout = null;
+
+function getTimeBasedGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function showCheckinGreetingModal(memberName) {
+  if (!checkinModal) return;
+
+  const greeting = getTimeBasedGreeting();
+  if (modalGreeting) {
+    modalGreeting.textContent = `${greeting}, ${memberName}!`;
+  }
+
+  if (modalTimestamp) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    modalTimestamp.textContent = `Checked in at ${timeStr} • Today`;
+  }
+
+  checkinModal.classList.add('active');
+  if (window.lucide) lucide.createIcons();
+
+  if (closeModalBtn) {
+    closeModalBtn.focus();
+  }
+
+  if (checkinModalTimeout) {
+    clearTimeout(checkinModalTimeout);
+  }
+
+  checkinModalTimeout = setTimeout(() => {
+    closeCheckinGreetingModal();
+  }, 4000);
+}
+
+function closeCheckinGreetingModal() {
+  if (!checkinModal) return;
+  checkinModal.classList.remove('active');
+  checkinModal.style.display = 'none';
+  if (checkinModalTimeout) {
+    clearTimeout(checkinModalTimeout);
+    checkinModalTimeout = null;
+  }
+  if (memberInput) {
+    memberInput.value = '';
+    memberInput.focus();
+  }
+  clearFieldError();
+}
+
+if (closeModalBtn) {
+  closeModalBtn.addEventListener('click', closeCheckinGreetingModal);
+}
+
+if (checkinModal) {
+  checkinModal.addEventListener('click', (e) => {
+    if (e.target === checkinModal) {
+      closeCheckinGreetingModal();
+    }
+  });
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && checkinModal && checkinModal.classList.contains('active')) {
+    closeCheckinGreetingModal();
+  }
+});
 
 // ==========================================
 // ATTENDANCE LOG RENDERING
@@ -865,7 +942,11 @@ function getModalFocusables(overlay) {
 }
 
 // Opens an overlay, hides the page behind it and moves focus into the dialog.
-function openModal(overlay, triggerElement, onOpen) {
+function openModal(modalId, triggerElement, onOpen) {
+  let overlay = modalId;
+  if (typeof modalId === 'string') {
+    overlay = document.getElementById(modalId);
+  }
   if (!overlay) return;
 
   // Never stack two modals on top of each other
@@ -875,7 +956,7 @@ function openModal(overlay, triggerElement, onOpen) {
   lastFocusedElement = triggerElement || document.activeElement;
   activeModal = overlay;
 
-  overlay.classList.remove('hidden');
+  overlay.classList.add('active');
   setBackgroundInert(true);
 
   if (onOpen) onOpen();
@@ -883,15 +964,19 @@ function openModal(overlay, triggerElement, onOpen) {
 
 // Closes an overlay, restores the page behind it and returns focus.
 function closeModal(overlay) {
-  if (!overlay) return;
+  let modal = overlay;
+  if (typeof overlay === 'string') {
+    modal = document.getElementById(overlay);
+  }
+  if (!modal) return;
 
-  overlay.classList.add('hidden');
+  modal.classList.remove('active');
   setBackgroundInert(false);
 
-  if (activeModal === overlay) activeModal = null;
+  if (activeModal === modal) activeModal = null;
 
   // Run the modal's own cleanup (reset form fields, clear state, ...)
-  const cleanup = modalCleanupHandlers.get(overlay);
+  const cleanup = modalCleanupHandlers.get(modal);
   if (cleanup) cleanup();
 
   // Only restore focus if the trigger still exists and can receive it
@@ -1113,10 +1198,7 @@ if (checkinForm) {
     renderAttendanceList();
     renderLiveOccupancy();
 
-    showToast(`Member ${name} checked in successfully!`);
-
-    memberInput.value = '';
-    clearFieldError();
+    showCheckinGreetingModal(name);
   });
 }
 
