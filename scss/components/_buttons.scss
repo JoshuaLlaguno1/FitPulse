@@ -60,7 +60,7 @@
   border: 1px solid rgba($danger, 0.4);
   color: $danger;
   padding: 5px 12px;
-  border-radius: $radius-sm;
+  border-radius: $radius-md;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -89,4 +89,48 @@
     opacity: 0.45;
     cursor: not-allowed;
   }
+}
+
+// Secondary / outline actions use dark slate surfaces for contrast.
+.btn-outline,
+.btn-secondary,
+#logoutBtn,
+#cancelAdminOverrideBtn {
+  background-color: $bg-main !important;
+  border: 1px solid $border-color !important;
+  color: $text-muted !important;
+  border-radius: $radius-md;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: $card-bg !important;
+    border-color: $primary !important;
+    color: $text-main !important;
+  }
+}
+
+.status-badge {
+  background: rgba($primary, 0.15) !important;
+  border: 1px solid rgba($primary, 0.3) !important;
+  color: $primary !important;
+  padding: 0.4rem 0.8rem;
+  border-radius: $radius-md !important;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.btn,
+.btn-primary,
+.btn-outline,
+.btn-danger,
+.btn-secondary,
+#logoutBtn,
+#clearLogBtn,
+#checkInBtn,
+#cancelAdminOverrideBtn {
+  border-radius: $radius-md !important;
 }

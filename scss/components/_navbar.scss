@@ -33,7 +33,7 @@
       background-color: rgba($secondary, 0.8);
       border: 1px solid $border-color;
       padding: 6px 14px;
-      border-radius: 20px;
+      border-radius: $radius-md;
       color: $text-muted;
     }
   }
@@ -65,7 +65,7 @@
   justify-self: center;
   background-color: rgba($bg-main, 0.55);
   border: 1px solid rgba($border-color, 0.8);
-  border-radius: 999px;
+  border-radius: $radius-md;
 
   .nav-link {
     display: inline-flex;
@@ -75,7 +75,7 @@
     padding: 8px 18px;
     background-color: transparent;
     border: 1px solid transparent;
-    border-radius: 999px;
+    border-radius: $radius-md;
     color: $text-muted;
     font-family: $font-family;
     font-size: 0.82rem;

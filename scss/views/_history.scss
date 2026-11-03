@@ -152,7 +152,7 @@
   color: $text-muted;
   background-color: rgba($border-color, 0.35);
   border: 1px solid rgba($border-color, 0.7);
-  border-radius: 20px;
+  border-radius: $radius-md;
   padding: 3px 10px;
   white-space: nowrap;
 }
@@ -186,7 +186,7 @@
     width: 40px;
     height: 40px;
     flex-shrink: 0;
-    border-radius: 12px;
+    border-radius: $radius-md;
     background-color: rgba($primary, 0.12);
     border: 1px solid rgba($primary, 0.2);
     color: $primary;
@@ -227,7 +227,7 @@
     letter-spacing: 0.5px;
     text-transform: uppercase;
     padding: 4px 10px;
-    border-radius: 20px;
+    border-radius: $radius-md;
     white-space: nowrap;
 
     &.is-active {
@@ -256,7 +256,7 @@
     .history-avatar {
       width: 36px;
       height: 36px;
-      border-radius: 10px;
+      border-radius: $radius-md;
     }
 
     .history-status {
@@ -332,7 +332,7 @@
     rgba($border-color, 0.35) 63%
   );
   background-size: 400% 100%;
-  border-radius: 6px;
+  border-radius: $radius-sm;
   animation: skeletonShimmer 1.4s ease infinite;
 }
 

@@ -60,3 +60,24 @@
       </div>
     </div>
   </div>
+
+  <!-- ADMIN OVERRIDE VERIFICATION MODAL -->
+  <div id="adminAuthModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="admin-auth-title">
+    <div class="modal-panel login-panel admin-auth-panel">
+      <button type="button" class="modal-close" id="closeAdminAuthBtn" data-close-modal aria-label="Close admin verification">&times;</button>
+      <p class="eyebrow">Security Verification</p>
+      <h3 class="modal-title" id="admin-auth-title">Admin Override Required</h3>
+      <p class="modal-text">Staff authorization detected. Enter Administrator Password to approve this action.</p>
+      <form id="adminOverrideForm">
+        <div class="form-group">
+          <label for="adminOverridePassword">Admin Password</label>
+          <input type="password" id="adminOverridePassword" placeholder="Enter Admin Password" required autocomplete="current-password">
+        </div>
+        <p id="adminOverrideError" class="login-error hidden" role="alert"></p>
+        <div class="admin-auth-actions">
+          <button type="button" class="btn btn-outline" id="cancelAdminOverrideBtn" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Confirm Action</button>
+        </div>
+      </form>
+    </div>
+  </div>

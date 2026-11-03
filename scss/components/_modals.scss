@@ -30,7 +30,7 @@
 .modal-card {
   background: #161e2e;
   border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 16px;
+  border-radius: $radius-lg;
   padding: 32px;
   width: 100%;
   max-width: 420px;
@@ -81,7 +81,7 @@
     color: #ffffff;
     border: none;
     padding: 10px 32px;
-    border-radius: 999px;
+    border-radius: $radius-md;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;

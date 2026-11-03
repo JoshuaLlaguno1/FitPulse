@@ -10,7 +10,7 @@
   letter-spacing: 0.4px;
   text-transform: uppercase;
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: $radius-md;
   margin-left: 8px;
   line-height: 1.4;
   white-space: nowrap;
@@ -43,7 +43,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   padding: 3px 8px;
-  border-radius: $radius-sm;
+  border-radius: $radius-md;
 }
 
 .time-badge {
@@ -51,7 +51,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   padding: 4px 10px;
-  border-radius: $radius-sm;
+  border-radius: $radius-md;
 
   &.in {
     background-color: rgba($primary, 0.15);

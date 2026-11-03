@@ -18,9 +18,130 @@
 
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="login.css" />
 </head>
 <body>
 
+  <section id="landingView" class="landing-view" aria-labelledby="landing-title">
+    <header class="landing-nav">
+      <a class="landing-logo" href="#home" aria-label="FitPulse home">FitPulse</a>
+      <nav aria-label="Landing navigation">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <button type="button" class="btn btn-primary" id="openLoginModalBtn">Log In</button>
+      </nav>
+    </header>
+    <main>
+      <section class="hero" id="home" aria-labelledby="landing-title">
+        <div class="hero-video-wrapper" aria-hidden="true">
+          <video class="hero-video" autoplay loop muted playsinline>
+            <source src="assets/videoplayback.webm" type="video/webm">
+          </video>
+          <div class="hero-video-overlay"></div>
+        </div>
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">FitPulse &middot; Smart Kiosk Systems</p>
+            <h1 class="hero-title" id="landing-title">
+              <span class="hero-title-line">Move better.</span>
+              <span class="hero-title-line highlight">Feel stronger.</span>
+            </h1>
+            <p class="hero-description">
+              A smarter, touchless way to record gym attendance, track real-time facility occupancy, and maintain security logs for Iligan City gyms.
+            </p>
+            <div class="hero-actions">
+              <button type="button" class="btn btn-primary btn-lg" data-open-modal="login">Staff &amp; Admin Login</button>
+              <a class="btn btn-outline btn-lg" href="#about">Learn More</a>
+            </div>
+            <ul class="hero-proof">
+              <li><span class="check" aria-hidden="true">&#10003;</span> Real-Time Capacity Tracking</li>
+              <li><span class="check" aria-hidden="true">&#10003;</span> Role-Based Security</li>
+              <li><span class="check" aria-hidden="true">&#10003;</span> Instant Check-In</li>
+            </ul>
+          </div>
+          <div class="hero-media">
+            <div class="hero-media-frame">
+              <div class="hero-status">
+                <span>System Status</span>
+                <span class="status-badge"><span aria-hidden="true">&#9679;</span> Kiosk Ready</span>
+              </div>
+              <div class="capacity-highlight">
+                <span class="capacity-number">25</span>
+                <span class="capacity-label">Max Facility Capacity</span>
+              </div>
+              <div class="security-note">Protected by Staff &amp; Admin Dual-Login Hierarchy</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-bar" aria-label="FitPulse system highlights">
+        <div class="container stats-grid">
+          <div class="stat">
+            <span class="stat-number">100%</span>
+            <span class="stat-label">Client-Side Speed</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">0.2s</span>
+            <span class="stat-label">Check-In Response</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">2 Roles</span>
+            <span class="stat-label">Staff &amp; Admin Hierarchy</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">Kiosk Operational Mode</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section landing-about" id="about" aria-labelledby="about-title">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow">System Features</p>
+            <h2 class="section-title" id="about-title">Built for <span>Express Check-In</span></h2>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <h3>01. Member Self Check-In</h3>
+              <p>Fast express check-in interface allowing gym members to record their arrival instantly.</p>
+            </article>
+            <article class="feature-card">
+              <h3>02. Real-Time Occupancy Counter</h3>
+              <p>Live visual progress monitoring current active gym members against maximum facility capacity.</p>
+            </article>
+            <article class="feature-card">
+              <h3>03. Staff Attendance Management</h3>
+              <p>Staff sessions unlock continuous monitoring, member checkout processing, and daily history logs.</p>
+            </article>
+            <article class="feature-card">
+              <h3>04. Protected Admin Actions</h3>
+              <p>Sensitive operations like clearing logs and history require an Administrator password override.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section landing-contact" id="contact" aria-labelledby="contact-title">
+        <div class="container contact-grid">
+          <div>
+            <p class="eyebrow">Contact &amp; Location</p>
+            <h2 id="contact-title">FitPulse Kiosk Systems</h2>
+            <p class="contact-description">Designed for fitness centers, athletic clubs, and local gyms in Iligan City.</p>
+          </div>
+          <div class="contact-details">
+            <p><strong>Location:</strong> General Aguinaldo St. Ext., Pala-o, Iligan City</p>
+            <p><strong>Operating Hours:</strong> Monday - Sunday (6:00 AM - 10:00 PM)</p>
+            <p><strong>Course Project:</strong> FitPulse Systems - Web Systems &amp; Technologies</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <div id="attendanceDashboardView" class="hidden">
   <!-- Top Navigation Header -->
   <header class="navbar">
     <div class="logo">FitPulse</div>
@@ -37,7 +158,10 @@
     </nav>
 
     <div class="user-profile">
-      <span id="profile-role-text">Public Kiosk</span>
+      <div id="sessionControl">
+        <span id="sessionBadge" class="status-badge"></span>
+        <button type="button" class="btn btn-outline" id="logoutBtn">Switch / Log Out</button>
+      </div>
     </div>
   </header>
 
@@ -321,31 +445,24 @@
     </div>
   </div>
 
-  <!-- Admin Passcode Modal -->
-  <div id="admin-pin-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="admin-pin-title" aria-describedby="admin-pin-desc">
-    <div class="modal-card">
-      <div class="modal-header">
-        <i data-lucide="lock" class="warning-icon"></i>
-        <h3 id="admin-pin-title">Admin Passcode Required</h3>
-      </div>
-      <p id="admin-pin-desc" class="modal-body">
-        Enter the admin PIN to confirm this action.
-      </p>
-      <label class="modal-input-label" for="admin-pin-input">
-        Admin PIN
-      </label>
-      <input
-        type="password"
-        id="admin-pin-input"
-        class="modal-input"
-        placeholder="Enter Admin PIN"
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <div class="modal-actions">
-        <button id="btn-admin-pin-cancel" class="btn btn-secondary-modal">Cancel</button>
-        <button id="btn-admin-pin-confirm" class="btn btn-danger-modal">Confirm</button>
-      </div>
+  <!-- Admin Override Verification Modal -->
+  <div id="adminAuthModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="admin-auth-title">
+    <div class="modal-panel login-panel admin-auth-panel">
+      <button type="button" class="modal-close" id="closeAdminAuthBtn" data-close-modal aria-label="Close admin verification">&times;</button>
+      <p class="eyebrow">Security Verification</p>
+      <h3 class="modal-title" id="admin-auth-title">Admin Override Required</h3>
+      <p class="modal-text">Staff authorization detected. Enter Administrator Password to approve this action.</p>
+      <form id="adminOverrideForm">
+        <div class="form-group">
+          <label for="adminOverridePassword">Admin Password</label>
+          <input type="password" id="adminOverridePassword" placeholder="Enter Admin Password" required autocomplete="current-password">
+        </div>
+        <p id="adminOverrideError" class="login-error hidden" role="alert"></p>
+        <div class="admin-auth-actions">
+          <button type="button" class="btn btn-outline" id="cancelAdminOverrideBtn" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Confirm Action</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -362,6 +479,31 @@
 
   <!-- Screen-reader announcements for check-in / check-out events -->
   <div id="live-region" class="sr-only" role="status" aria-live="polite"></div>
+  </div>
+
+  <div id="login-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="login-modal-title" aria-describedby="login-modal-text">
+    <div class="modal-panel login-panel">
+      <button type="button" class="modal-close" id="closeLoginModalBtn" aria-label="Close login">&times;</button>
+      <p class="eyebrow">Staff Access</p>
+      <h2 class="modal-title" id="login-modal-title">System <span>Login</span></h2>
+      <p class="modal-text" id="login-modal-text">Select your role to start the attendance session.</p>
+      <form id="loginForm" class="nav-login-form">
+        <div class="form-group">
+          <label for="loginRole">Role</label>
+          <select id="loginRole">
+            <option value="staff">Staff Member</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password / PIN</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password or PIN" required autocomplete="current-password">
+        </div>
+        <p id="loginError" class="login-error hidden" role="alert"></p>
+        <button type="submit" class="btn btn-primary btn-block">LOG IN</button>
+      </form>
+    </div>
+  </div>
 
   <!-- Initialize Lucide Icons -->
   <script>

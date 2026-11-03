@@ -10,9 +10,9 @@ const RING_CIRCUMFERENCE = 314;
 let records = [];
 let nextRecordId = 1;
 
-// Admin PIN for destructive actions
-const ADMIN_PIN = '1234';
-let pendingClearAction = null; // 'clearLogs' | 'clearHistory'
+const ROLE_PASSWORDS = { staff: 'staff123', admin: 'admin888' };
+let currentUser = { isLoggedIn: false, role: null };
+let pendingActionCallback = null;
 
 // Dashboard-only view cutoff. Records with an id at or below this value stay
 // in the central store (and in History) but are hidden from the dashboard log.
@@ -63,6 +63,17 @@ const toast = document.getElementById('feedback-toast');
 const toastMessage = document.getElementById('toast-message');
 const toastIconSlot = document.getElementById('toast-icon-slot');
 const liveRegion = document.getElementById('live-region');
+const landingView = document.getElementById('landingView');
+const attendanceDashboardView = document.getElementById('attendanceDashboardView');
+const sessionBadge = document.getElementById('sessionBadge');
+const logoutBtn = document.getElementById('logoutBtn');
+const loginModal = document.getElementById('login-modal');
+const loginForm = document.getElementById('loginForm');
+const loginRole = document.getElementById('loginRole');
+const loginPassword = document.getElementById('loginPassword');
+const loginError = document.getElementById('loginError');
+const openLoginButtons = document.querySelectorAll('#openLoginModalBtn, [data-open-login], [data-open-modal="login"]');
+const closeLoginModalBtn = document.getElementById('closeLoginModalBtn');
 
 // Modal DOM Elements
 const checkoutModal = document.getElementById('checkoutModal');
@@ -107,10 +118,12 @@ const btnClearHistoryCancel = document.getElementById('btn-clear-history-cancel'
 const btnClearHistoryConfirm = document.getElementById('btn-clear-history-confirm');
 
 // Admin PIN modal elements
-const adminPinModal = document.getElementById('admin-pin-modal');
-const adminPinInput = document.getElementById('admin-pin-input');
-const btnAdminPinCancel = document.getElementById('btn-admin-pin-cancel');
-const btnAdminPinConfirm = document.getElementById('btn-admin-pin-confirm');
+const adminPinModal = document.getElementById('adminAuthModal');
+const adminOverrideForm = document.getElementById('adminOverrideForm');
+const adminOverridePassword = document.getElementById('adminOverridePassword');
+const adminOverrideError = document.getElementById('adminOverrideError');
+const closeAdminAuthBtn = document.getElementById('closeAdminAuthBtn');
+const cancelAdminOverrideBtn = document.getElementById('cancelAdminOverrideBtn');
 
 // ==========================================
 // UTILITY FUNCTIONS
@@ -804,6 +817,78 @@ if (btnHistoryEmpty) {
   });
 }
 
+function openLoginGateway(triggerElement) {
+  if (!loginModal) return;
+  if (loginError) {
+    loginError.textContent = '';
+    loginError.classList.add('hidden');
+  }
+  openModal(loginModal, triggerElement, () => {
+    if (loginPassword) {
+      loginPassword.value = '';
+      loginPassword.focus();
+    }
+  });
+}
+
+openLoginButtons.forEach(button => {
+  button.addEventListener('click', () => openLoginGateway(button));
+});
+
+if (closeLoginModalBtn) {
+  closeLoginModalBtn.addEventListener('click', () => closeModal(loginModal));
+}
+
+if (loginModal) {
+  loginModal.addEventListener('click', event => {
+    if (event.target === loginModal) closeModal(loginModal);
+  });
+}
+
+if (loginForm) {
+  loginForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const role = loginRole ? loginRole.value : '';
+    const password = loginPassword ? loginPassword.value : '';
+    if (!Object.prototype.hasOwnProperty.call(ROLE_PASSWORDS, role) || ROLE_PASSWORDS[role] !== password) {
+      if (loginError) {
+        loginError.textContent = 'Invalid role or password. Please try again.';
+        loginError.classList.remove('hidden');
+      }
+      if (loginPassword) {
+        loginPassword.value = '';
+        loginPassword.focus();
+      }
+      return;
+    }
+
+    currentUser = { isLoggedIn: true, role };
+    if (landingView) landingView.classList.add('hidden');
+    if (attendanceDashboardView) attendanceDashboardView.classList.remove('hidden');
+    if (sessionBadge) sessionBadge.textContent = role === 'admin' ? 'Administrator' : 'Staff Member';
+    lastFocusedElement = null;
+    closeModal(loginModal);
+    if (memberInput) memberInput.focus();
+  });
+}
+
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => {
+    currentUser = { isLoggedIn: false, role: null };
+    pendingActionCallback = null;
+    if (loginForm) loginForm.reset();
+    if (loginError) {
+      loginError.textContent = '';
+      loginError.classList.add('hidden');
+    }
+    if (sessionBadge) sessionBadge.textContent = '';
+    if (attendanceDashboardView) attendanceDashboardView.classList.add('hidden');
+    if (landingView) landingView.classList.remove('hidden');
+    setView('dashboard');
+    window.scrollTo(0, 0);
+  });
+}
+
 // Clear all history
 function openClearHistoryModal(triggerElement) {
   openModal(clearHistoryModal, triggerElement, () => {
@@ -832,14 +917,10 @@ function clearAllHistory() {
 
 if (btnClearHistory) {
   btnClearHistory.addEventListener('click', () => {
-    pendingClearAction = 'clearHistory';
-    openModal(adminPinModal, btnClearHistory, () => {
-      if (adminPinInput) {
-        adminPinInput.value = '';
-        adminPinInput.focus();
-      }
-    });
-    if (window.lucide) lucide.createIcons();
+    executeProtectedAction(
+      () => openClearHistoryModal(btnClearHistory),
+      btnClearHistory
+    );
   });
 }
 
@@ -861,60 +942,58 @@ if (clearHistoryModal) {
   });
 }
 
-// Admin PIN modal handlers
-function closeAdminPinModal() {
+function closeAdminAuthorization() {
+  pendingActionCallback = null;
   closeModal(adminPinModal);
 }
 
-if (btnAdminPinCancel) {
-  btnAdminPinCancel.addEventListener('click', () => {
-    pendingClearAction = null;
-    closeAdminPinModal();
-  });
+if (cancelAdminOverrideBtn) {
+  cancelAdminOverrideBtn.addEventListener('click', closeAdminAuthorization);
 }
 
-if (btnAdminPinConfirm) {
-  btnAdminPinConfirm.addEventListener('click', () => {
-    if (!adminPinInput) return;
-    const entered = adminPinInput.value;
-    if (entered === ADMIN_PIN) {
-      const action = pendingClearAction;
-      pendingClearAction = null;
-      adminPinInput.value = '';
-      closeAdminPinModal();
-      if (action === 'clearLogs') {
-        openModal(clearLogsModal, btnClearLogs, () => {
-          if (clearConfirmInput) {
-            clearConfirmInput.value = '';
-            clearConfirmInput.focus();
-          }
-          updateClearConfirmState();
-        });
-        if (window.lucide) lucide.createIcons();
-        return;
-      } else if (action === 'clearHistory') {
-        openModal(clearHistoryModal, btnClearHistory);
-        if (window.lucide) lucide.createIcons();
-        return;
-      }
-      if (searchInput) searchInput.focus();
+if (closeAdminAuthBtn) {
+  closeAdminAuthBtn.addEventListener('click', closeAdminAuthorization);
+}
+
+if (adminOverrideForm) {
+  adminOverrideForm.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!adminOverridePassword) return;
+
+    if (
+      currentUser.isLoggedIn &&
+      currentUser.role === 'staff' &&
+      adminOverridePassword.value === ROLE_PASSWORDS.admin
+    ) {
+      const action = pendingActionCallback;
+      pendingActionCallback = null;
+      closeModal(adminPinModal);
+      if (typeof action === 'function') action();
     } else {
-      adminPinInput.value = '';
-      showToast('Invalid Admin Passcode. Access denied.', 'error');
-      adminPinInput.focus();
+      adminOverridePassword.value = '';
+      if (adminOverrideError) {
+        adminOverrideError.textContent = 'Invalid Administrator password.';
+        adminOverrideError.classList.remove('hidden');
+      }
+      adminOverridePassword.focus();
     }
   });
 }
 
 if (adminPinModal) {
-  adminPinModal.addEventListener('click', (e) => {
-    if (e.target === adminPinModal) {
-      pendingClearAction = null;
-      if (adminPinInput) adminPinInput.value = '';
-      closeAdminPinModal();
-    }
+  adminPinModal.addEventListener('click', event => {
+    if (event.target === adminPinModal) closeAdminAuthorization();
   });
 }
+
+modalCleanupHandlers.set(adminPinModal, () => {
+  pendingActionCallback = null;
+  if (adminOverrideForm) adminOverrideForm.reset();
+  if (adminOverrideError) {
+    adminOverrideError.textContent = '';
+    adminOverrideError.classList.add('hidden');
+  }
+});
 
 // ==========================================
 // MODAL CONTROLS (shared by every overlay)
@@ -922,7 +1001,7 @@ if (adminPinModal) {
 
 // Hide the page behind the modal from both pointer and assistive technology
 function setBackgroundInert(isInert) {
-  [navbar, dashboardContainer].forEach(el => {
+  [landingView, navbar, dashboardContainer].forEach(el => {
     if (!el) return;
     if (isInert) {
       el.setAttribute('inert', '');
@@ -957,6 +1036,7 @@ function openModal(modalId, triggerElement, onOpen) {
   activeModal = overlay;
 
   overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
   setBackgroundInert(true);
 
   if (onOpen) onOpen();
@@ -971,6 +1051,7 @@ function closeModal(overlay) {
   if (!modal) return;
 
   modal.classList.remove('active');
+  modal.setAttribute('aria-hidden', 'true');
   setBackgroundInert(false);
 
   if (activeModal === modal) activeModal = null;
@@ -1272,16 +1353,56 @@ function updateClearLogsButtonState() {
   btnClearLogs.disabled = getDashboardRecords().length === 0;
 }
 
-function openClearLogsModal(triggerElement) {
-  // Require admin PIN before clearing logs
-  pendingClearAction = 'clearLogs';
-  openModal(adminPinModal, triggerElement, () => {
-    if (adminPinInput) {
-      adminPinInput.value = '';
-      adminPinInput.focus();
+function openClearLogsConfirmation(triggerElement) {
+  openModal(clearLogsModal, triggerElement, () => {
+    if (clearConfirmInput) {
+      clearConfirmInput.value = '';
+      clearConfirmInput.focus();
     }
+    updateClearConfirmState();
   });
   if (window.lucide) lucide.createIcons();
+}
+
+function executeProtectedAction(actionCallback, triggerElement) {
+  if (!currentUser.isLoggedIn) {
+    openLoginGateway(triggerElement);
+    return;
+  }
+
+  if (currentUser.role === 'admin') {
+    actionCallback();
+    return;
+  }
+
+  if (currentUser.role === 'staff') {
+    pendingActionCallback = actionCallback;
+    openModal(adminPinModal, triggerElement, () => {
+      if (adminOverrideForm) adminOverrideForm.reset();
+      if (adminOverrideError) {
+        adminOverrideError.textContent = '';
+        adminOverrideError.classList.add('hidden');
+      }
+      if (adminOverridePassword) adminOverridePassword.focus();
+    });
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+function openClearLogsModal(triggerElement) {
+  executeProtectedAction(
+    () => openClearLogsConfirmation(triggerElement),
+    triggerElement
+  );
+}
+
+if (adminPinModal && adminOverridePassword) {
+  adminOverridePassword.addEventListener('input', () => {
+    if (adminOverrideError) {
+      adminOverrideError.textContent = '';
+      adminOverrideError.classList.add('hidden');
+    }
+  });
 }
 
 function closeClearLogsModal() {
